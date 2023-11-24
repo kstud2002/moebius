@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32825.248
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Möbius", "Möbius\Möbius.csproj", "{3C242813-4A20-4EEF-AAE9-F759959A237D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3C242813-4A20-4EEF-AAE9-F759959A237D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C242813-4A20-4EEF-AAE9-F759959A237D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C242813-4A20-4EEF-AAE9-F759959A237D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C242813-4A20-4EEF-AAE9-F759959A237D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E867DECE-B627-4C8D-AC65-05672BF4B481}
+	EndGlobalSection
+EndGlobal
