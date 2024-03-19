@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "Moebius",
   "resources": {
-    "hash": "sha256-duBOLnK8V/yG4IPymXrsDCJWfEtkj0UyzjyifH20RC0=",
+    "hash": "sha256-lIpvM0hugDdHjrEVVgXXdFFE96MGkr9wo0E5/9wL90g=",
     "jsModuleNative": {
       "dotnet.native.8.0.3.wzxwl5s97r.js": "sha256-D4sYBYmDfH/YekgYRgX959/2RG6k28sJSHmcsn+iikk="
     },
@@ -31,7 +31,7 @@
       "Microsoft.Extensions.Primitives.wasm": "sha256-6187ynEahDlSLMBvD4vAmiLpZ3clRb5xu6rM7O8AxNo=",
       "Microsoft.JSInterop.wasm": "sha256-y9e5FjTO/gq0d6pvl/cYf7uT232Y/Dw7ZS0YNZGBv/M=",
       "Microsoft.JSInterop.WebAssembly.wasm": "sha256-aCgxiIU+arbpOkgLngl1hBQLocrFL2/t1zUJV8HXOzI=",
-      "Moebius.wasm": "sha256-3VJHvsXPXG8x+P1TmoOAAhcxE0NlliC/xpXCYV9OOdA=",
+      "Moebius.wasm": "sha256-dSlXwaLeiZ68fPMnqEQfCne6y8TkgQyLjjZyBGXTKYw=",
       "System.Collections.Concurrent.wasm": "sha256-ilDLE3Hc30p+BghS9JKKHHt7RClRAU+K81F99N8O4Pc=",
       "System.Collections.wasm": "sha256-LQHyRTVIDfbZXTWDC8Yobzxc7iKr0G9wBqGm2q0vQXM=",
       "System.ComponentModel.wasm": "sha256-eVbSVXRcRx2YTri/KL0Qzmj3ebRDio4egDZIIdTic00=",
