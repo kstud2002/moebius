@@ -1,6 +1,6 @@
 ﻿namespace Moebius.Pages;
 
-public partial class MainPage
+public partial class Home
 {
     private int startCol;
 
