@@ -91,22 +91,22 @@
                         foreach (var card in step)
                         {
                             <div>
-                                @card.Item1: @ConvertToString(card.Item2)
+                                @card.Column: @card.Card.DisplayText)
                             </div>
                         }
                     }
                 </td>
                 <td>
-                    @foreach (var point in RoundScores.ElementAt(Steps.IndexOf(step)).values)
+                    @foreach (var point in RoundScores.ElementAt(Steps.IndexOf(step)).PointSources)
                     {
-                        @if (point.points != 0)
+                        @if (point.Value != 0)
                         {
                             <div>
-                                @point.bonus: @point.points
+                                @point.Key: @point.Value
                             </div>
                         }
                     }
-                    <strong>Total: @RoundScores.ElementAt(Steps.IndexOf(step)).total / Running Total: @RoundScores.ElementAt(Steps.IndexOf(step)).runningTotal</strong>
+                    <strong>Total: @RoundScores.ElementAt(Steps.IndexOf(step)).Total / Running Total: @RoundScores.ElementAt(Steps.IndexOf(step)).RunningTotal</strong>
                 </td>
             </tr>
         }

@@ -4,11 +4,11 @@ public partial class MainPage
 {
     private int startCol;
 
-    private Random rand = new Random();
+    private readonly Random rand = new();
 
-    private List<int> columnNumbers = new() { 1, 2, 3, 4 };
+    private List<int> columnNumbers = [1, 2, 3, 4];
 
-    private int MaxNumberOfTries = 1000000;
+    private int MaxNumberOfTries = 1000;
     private int ScoreToWin = 61; //61
 
     private string column1Value;
@@ -19,8 +19,6 @@ public partial class MainPage
         set
         {
             AddToList(value, 1);
-
-            // do stuff if input value is not valid
 
             column1Value = string.Empty; // empty Your input field value
             StateHasChanged();
@@ -36,8 +34,6 @@ public partial class MainPage
         {
             AddToList(value, 2);
 
-            // do stuff if input value is not valid
-
             column2Value = string.Empty; // empty Your input field value
             StateHasChanged();
         }
@@ -51,8 +47,6 @@ public partial class MainPage
         set
         {
             AddToList(value, 3);
-
-            // do stuff if input value is not valid
 
             column3Value = string.Empty; // empty Your input field value
             StateHasChanged();
@@ -68,31 +62,29 @@ public partial class MainPage
         {
             AddToList(value, 4);
 
-            // do stuff if input value is not valid
-
             column4Value = string.Empty; // empty Your input field value
             StateHasChanged();
         }
     }
 
-    public List<string> Column1 { get; set; } = new List<string>();
-    public List<string> Column2 { get; set; } = new List<string>();
-    public List<string> Column3 { get; set; } = new List<string>();
-    public List<string> Column4 { get; set; } = new List<string>();
+    public List<string> Column1 { get; set; } = [];
+    public List<string> Column2 { get; set; } = [];
+    public List<string> Column3 { get; set; } = [];
+    public List<string> Column4 { get; set; } = [];
 
-    public List<string> InitialColumn1 { get; set; } = new List<string>();
-    public List<string> InitialColumn2 { get; set; } = new List<string>();
-    public List<string> InitialColumn3 { get; set; } = new List<string>();
-    public List<string> InitialColumn4 { get; set; } = new List<string>();
+    public List<string> InitialColumn1 { get; set; } = [];
+    public List<string> InitialColumn2 { get; set; } = [];
+    public List<string> InitialColumn3 { get; set; } = [];
+    public List<string> InitialColumn4 { get; set; } = [];
 
     public int Score { get; set; }
 
     public int NumberOfTries { get; set; }
 
-    public List<List<(int column, decimal card)>> Steps { get; set; } = new();
+    public List<List<SelectedCard>> Steps { get; set; } = [];
 
-    public List<decimal> RoundTotalTotals { get; set; } = new();
-    public List<(List<(string bonus, int points)> values, int total, int runningTotal)> RoundScores { get; set; } = new();
+    public List<decimal> RoundTotalTotals { get; set; } = [];
+    public List<RoundScore> RoundScores { get; set; } = [];
 
     public bool IsReadyForSolve() =>
         InitialColumn1.Count != 13 ||
@@ -147,6 +139,7 @@ public partial class MainPage
     public void Win()
     {
         NumberOfTries = 0;
+        Score = 0;
 
         while (Score < ScoreToWin && NumberOfTries < MaxNumberOfTries)
         {
@@ -154,9 +147,14 @@ public partial class MainPage
             Column2 = new List<string>(InitialColumn2);
             Column3 = new List<string>(InitialColumn3);
             Column4 = new List<string>(InitialColumn4);
-            columnNumbers = new() { 1, 2, 3, 4 };
+            columnNumbers = [1, 2, 3, 4];
             Solve();
             Score = CalculateScore();
+
+#if DEBUG
+            Console.WriteLine($"Try Nr. {NumberOfTries}: Score => {Score}");
+#endif
+
             NumberOfTries++;
         }
     }
@@ -167,58 +165,58 @@ public partial class MainPage
         RoundTotalTotals.Clear();
         RoundScores.Clear();
 
-        while (Column1.Any()
-            || Column2.Any()
-            || Column3.Any()
-            || Column4.Any())
+        while (Column1.Count != 0
+            || Column2.Count != 0
+            || Column3.Count != 0
+            || Column4.Count != 0)
         {
-            Steps.Add(new());
-            List<decimal> RoundTotal = new();
+            Steps.Add([]);
+            List<decimal> RoundTotal = [];
 
             while (Math.Floor(RoundTotal.Sum()) < 32)
             {
-                if (!columnNumbers.Any())
+                if (columnNumbers.Count == 0)
                 {
                     RoundTotalTotals.Add(RoundTotal.Sum());
                     return;
                 }
-                int randCol = GetRandomColumn(Steps.LastOrDefault()?.LastOrDefault().card);
+                int randCol = GetRandomColumn(Steps.LastOrDefault()?.LastOrDefault()?.Card);
                 startCol = randCol;
 
-                var number = GetNumber(randCol, 31 - RoundTotal.Sum());
+                var selectedCard = GetCard(randCol, 31 - RoundTotal.Sum());
 
-                if (number.number == null)
+                if (selectedCard == null)
                 {
                     break;
                 }
                 else
                 {
-                    switch (number.col)
+                    switch (selectedCard.Column)
                     {
                         case 1:
                             Column1.RemoveAt(Column1.Count - 1);
-                            if (!Column1.Any())
+                            if (Column1.Count == 0)
                             {
                                 columnNumbers.Remove(1);
                             }
                             break;
                         case 2:
                             Column2.RemoveAt(Column2.Count - 1);
-                            if (!Column2.Any())
+                            if (Column2.Count == 0)
                             {
                                 columnNumbers.Remove(2);
                             }
                             break;
                         case 3:
                             Column3.RemoveAt(Column3.Count - 1);
-                            if (!Column3.Any())
+                            if (Column3.Count == 0)
                             {
                                 columnNumbers.Remove(3);
                             }
                             break;
                         case 4:
                             Column4.RemoveAt(Column4.Count - 1);
-                            if (!Column4.Any())
+                            if (Column4.Count == 0)
                             {
                                 columnNumbers.Remove(4);
                             }
@@ -228,14 +226,14 @@ public partial class MainPage
                     }
                 }
 
-                RoundTotal.Add(number.number.Value);
-                Steps.Last().Add((number.col.Value, number.number.Value));
+                RoundTotal.Add(selectedCard.Card.CardValue);
+                Steps.Last().Add(selectedCard);
             }
             RoundTotalTotals.Add(RoundTotal.Sum());
         }
     }
 
-    private int GetRandomColumn(decimal? lastCard)
+    private int GetRandomColumn(Card? lastCard)
     {
         if (lastCard == null)
         {
@@ -259,21 +257,19 @@ public partial class MainPage
             return columnNumbers.ElementAt(rand.Next(0, columnNumbers.Count));
         }
 
-        var card = ConvertToString(lastCard.Value);
-
-        if (Column1.LastOrDefault() == card)
+        if (Column1.LastOrDefault() == lastCard.DisplayText)
         {
             return 1;
         }
-        else if (Column2.LastOrDefault() == card)
+        else if (Column2.LastOrDefault() == lastCard.DisplayText)
         {
             return 2;
         }
-        else if (Column3.LastOrDefault() == card)
+        else if (Column3.LastOrDefault() == lastCard.DisplayText)
         {
             return 3;
         }
-        else if (Column4.LastOrDefault() == card)
+        else if (Column4.LastOrDefault() == lastCard.DisplayText)
         {
             return 4;
         }
@@ -281,80 +277,86 @@ public partial class MainPage
         return columnNumbers.ElementAt(rand.Next(0, columnNumbers.Count));
     }
 
-    private (decimal? number, int? col) GetNumber(int randCol, decimal remaining)
+    private SelectedCard? GetCard(int randCol, decimal remaining)
     {
-        (decimal? number, int? col) result = randCol switch
+        string? result = randCol switch
         {
-            1 => (ConvertToDecimal(Column1.LastOrDefault(), randCol), randCol),
-            2 => (ConvertToDecimal(Column2.LastOrDefault(), randCol), randCol),
-            3 => (ConvertToDecimal(Column3.LastOrDefault(), randCol), randCol),
-            4 => (ConvertToDecimal(Column4.LastOrDefault(), randCol), randCol),
-            _ => (null, null),
+            1 => Column1.LastOrDefault(),
+            2 => Column2.LastOrDefault(),
+            3 => Column3.LastOrDefault(),
+            4 => Column4.LastOrDefault(),
+            _ => null,
         };
-        if (result.number == null || result.number > Math.Ceiling(remaining))
+        if (result == null || new Card(result).CardValue > Math.Ceiling(remaining))
         {
             randCol = randCol == 4 ? 1 : randCol + 1;
             if (randCol == startCol)
             {
-                return (null, null);
+                return null;
             }
             else
             {
-                result = GetNumber(randCol, remaining);
+                return GetCard(randCol, remaining);
             }
-            return result;
         }
 
-        return result;
+        return new SelectedCard(randCol, new Card(result));
     }
 
     private int CalculateScore()
     {
         foreach (var step in Steps)
         {
-            List<(string bonus, int points)> score = new();
-            if (ConvertToString(step.First().card) == "J")
+            Dictionary<string, int> pointSources = [];
+            if (step.First().Card.DisplayText == "J")
             {
-                score.Add(("Joker", 2));
+                pointSources.Add("Joker", 2);
             }
 
-            score.Add(("15 Bonus", CalculateTotal15(step)));
+            pointSources.Add("15 Bonus", CalculateTotal15(step));
 
-            if (Math.Floor(step.Sum(x => x.card)) == 31)
+            if (step.Sum(x => x.Card.CardValue) == 31)
             {
-                score.Add(("31 Bonus", 2));
+                pointSources.Add("31 Bonus", 2);
             }
 
-            score.Add(("Same Cards", CalculateSameCards(step)));
+            pointSources.Add("Same Cards", CalculateSameCards(step));
 
-            score.Add(("Run Bonus", CalculateCardsInARow(step)));
-            RoundScores.Add((score, score.Select(x => x.points).Sum(), RoundScores.Select(x => x.total).Sum() + score.Select(x => x.points).Sum()));
+            pointSources.Add("Run Bonus", SumOfNewConsecutiveBlockLengths(step.Select(s => s.Card.SortOrder).ToList()));
+
+            RoundScores.Add(new RoundScore
+            {
+                PointSources = pointSources,
+                Total = pointSources.Values.Sum(),
+                RunningTotal = (RoundScores.LastOrDefault()?.RunningTotal ?? 0) + pointSources.Values.Sum(),
+            });
+
         }
-        return RoundScores.Select(x => x.total).Sum();
+        return RoundScores.Select(rs => rs.Total).Sum();
     }
 
-    private static int CalculateTotal15(List<(int column, decimal card)> step)
+    private static int CalculateTotal15(List<SelectedCard> step)
     {
         int total = 0;
-        foreach (var card in step)
+        foreach (var selectedCard in step)
         {
-            total += (int)Math.Floor(card.card);
+            total += selectedCard.Card.CardValue;
             if (total == 15) return 2;
             if (total > 15) return 0;
         }
         return 0;
     }
 
-    private static int CalculateSameCards(List<(int column, decimal card)> step)
+    private static int CalculateSameCards(List<SelectedCard> step)
     {
         var tempScore = 0;
-        decimal oldCard = -1;
-        decimal newCard;
+        string oldCard = string.Empty;
+        string newCard;
         int sameCardCount = 1;
 
-        foreach (var card in step)
+        foreach (var selectedCard in step)
         {
-            newCard = card.card;
+            newCard = selectedCard.Card.DisplayText;
             if (newCard == oldCard)
             {
                 sameCardCount++;
@@ -364,7 +366,7 @@ public partial class MainPage
                 tempScore += GetSameCardScore(sameCardCount);
                 sameCardCount = 1;
             }
-            oldCard = card.card;
+            oldCard = selectedCard.Card.DisplayText;
         }
 
         tempScore += GetSameCardScore(sameCardCount);
@@ -379,168 +381,67 @@ public partial class MainPage
         _ => 0,
     };
 
-    private static int CalculateCardsInARow(List<(int column, decimal card)> step)
+    public static int SumOfNewConsecutiveBlockLengths(List<int> numbers)
     {
-        if (step.Count < 3) return 0;
+        int total = 0;
+        var seenBlocks = new HashSet<string>(); // avoid duplicates
 
-        var cardRuns = new List<List<int>>();
-
-        for (int i = 3; i < step.Count; i++)
+        for (int end = 0; end < numbers.Count; end++)
         {
-            foreach (var run in CheckIfCardsAreInARow(step.Take(i).Select(x => x.card).ToList()))
+            int min = numbers[end];
+            int max = numbers[end];
+            var seen = new HashSet<int> { numbers[end] };
+
+            int bestLength = 0;
+            int bestStart = -1;
+
+            for (int start = end - 1; start >= 0; start--)
             {
-                cardRuns.Add(run);
+                int value = numbers[start];
+
+                // Duplicate breaks the possibility
+                if (!seen.Add(value))
+                    break;
+
+                min = Math.Min(min, value);
+                max = Math.Max(max, value);
+
+                int length = end - start + 1;
+
+                // Check if this window is a consecutive set
+                if (max - min + 1 == length && length >= 3)
+                {
+                    string signature = $"{start}-{end}";
+
+                    if (!seenBlocks.Contains(signature))
+                    {
+                        // Track the longest new block for this step
+                        if (length > bestLength)
+                        {
+                            bestLength = length;
+                            bestStart = start;
+                        }
+                    }
+                }
+            }
+
+            // If we found a new block at this step, record it
+            if (bestLength > 0)
+            {
+                string signature = $"{bestStart}-{end}";
+                seenBlocks.Add(signature);
+                total += bestLength;
             }
         }
 
-        if (cardRuns.Select(x => x.Count).Sum() > 0)
-        {
-
-        }
-
-        return cardRuns.Distinct().Select(x => x.Count).Sum();
-
-        //List<List<(int column, decimal card)>> sublists = new();
-        //List<int> lengths = new();
-        //var scoringLists = new List<List<(int column, decimal card)>>();
-        //lengths.AddRange(Enumerable.Range(3, step.Count > 7 ? 5 : step.Count - 2));
-
-        //foreach (var length in lengths)
-        //{
-        //    for (int i = 0; i < step.Count - length + 1; i++)
-        //    {
-        //        sublists.Add(step.Skip(i).Take(length).ToList());
-        //    }
-        //}
-
-        //foreach (var list in sublists)
-        //{
-        //    foreach (var card in list.OrderBy(x => x.card))
-        //    {
-        //        newCard = card.card;
-        //        if (newCard - oldCard == 1 || newCard - oldCard == 0.1M)
-        //        {
-        //            cardsInARowCount++;
-        //        }
-        //        else
-        //        {
-        //            cardsInARowCount = 1;
-        //        }
-        //        oldCard = card.card;
-        //    }
-        //    if (cardsInARowCount == list.Count)
-        //    {
-        //        scoringLists.Add(list);
-        //    }
-        //}
-
-        //return scoringLists.Select(x => x.Count).Distinct().Sum();
-    }
-
-    private static List<List<int>> CheckIfCardsAreInARow(List<decimal> step)
-    {
-        var cardRuns = new List<List<int>>();
-        for (int i = 0; i < step.Count - 3; i++)
-        {
-            var tempRun = GetStepNumbers(step.Skip(i).OrderBy(x => x));
-            if (tempRun.Count() != tempRun.Distinct().Count()) return new();
-            var lowest = tempRun.First();
-            var highest = tempRun.Last();
-            var numberOfTerms = highest - lowest + 1;
-
-            if (numberOfTerms * ((highest + lowest) / 2) == tempRun.Sum())
-            {
-                cardRuns.Add(tempRun.ToList());
-            }
-        }
-
-        return cardRuns;
-    }
-
-    private static IEnumerable<int> GetStepNumbers(IEnumerable<decimal> step)
-    {
-        foreach (var card in step)
-        {
-            yield return card switch
-            {
-                10.1M => 11,
-                10.2M => 12,
-                12.3M => 13,
-                _ => (int)card
-            };
-        }
-    }
-
-    public static IEnumerable<T> Yield<T>(T value)
-    {
-        yield return value;
-    }
-
-    public static IEnumerable<IEnumerable<T>> GetOrderedPermutations<T>(IEnumerable<T> source, int k)
-    {
-        if (k == 0) return new[] { Enumerable.Empty<T>() };
-
-        int length = source.Count();
-
-        if (k == length) return new[] { source };
-
-        if (k > length) return Enumerable.Empty<IEnumerable<T>>();
-
-        return GetOrderedHelper(source, k, length);
-    }
-
-    private static IEnumerable<IEnumerable<T>> GetOrderedHelper<T>(IEnumerable<T> source, int k, int length)
-    {
-        if (k == 0)
-        {
-            yield return Enumerable.Empty<T>();
-            yield break;
-        }
-        int i = 0;
-        foreach (var item in source)
-        {
-            if (i + k > length) yield break;
-            var permutations = GetOrderedHelper(source.Skip(i + 1), k - 1, length - i);
-            i++;
-
-            foreach (var subPerm in permutations)
-            {
-                yield return Yield(item).Concat(subPerm);
-            }
-        }
-    }
-
-    private static decimal? ConvertToDecimal(string value, int col)
-    {
-        if (value == null) return null;
-
-        return value.ToUpper() switch
-        {
-            "A" => 1,
-            "J" => 10.1M,
-            "Q" => 10.2M,
-            "K" => 10.3M,
-            _ => Convert.ToInt32(value),
-        };
-    }
-
-    private static string ConvertToString(decimal value)
-    {
-        return value switch
-        {
-            1 => "A",
-            10.1M => "J",
-            10.2M => "Q",
-            10.3M => "K",
-            _ => value.ToString(),
-        };
+        return total;
     }
 
 
     public void AddToList(string value, int column)
     {
         string pattern = "A2345678910JQK";
-        if (!pattern.Contains(value.ToUpper()) || value.Length != 1) return;
+        if (!pattern.Contains(value, StringComparison.OrdinalIgnoreCase) || value.Length != 1) return;
 
         if (value.Contains('0') || value.Contains('1')) value = "10";
         switch (column)
@@ -592,5 +493,37 @@ public partial class MainPage
                 InitialColumn4.Clear();
                 break;
         }
+    }
+
+    public class SelectedCard(int column, Card card)
+    {
+        public int Column { get; set; } = column;
+        public Card Card { get; set; } = card;
+    }
+
+    public class Card(string displayText)
+    {
+        public string DisplayText { get; set; } = displayText.ToUpper();
+        public int CardValue => DisplayText switch
+        {
+            "A" => 1,
+            "J" or "Q" or "K" => 10,
+            _ => Convert.ToInt32(DisplayText),
+        };
+        public int SortOrder => DisplayText switch
+        {
+            "A" => 1,
+            "J" => 11,
+            "Q" => 12,
+            "K" => 13,
+            _ => Convert.ToInt32(DisplayText),
+        };
+    }
+
+    public class RoundScore
+    {
+        public required Dictionary<string, int> PointSources { get; set; }
+        public required int Total { get; set; }
+        public required int RunningTotal { get; set; }
     }
 }
